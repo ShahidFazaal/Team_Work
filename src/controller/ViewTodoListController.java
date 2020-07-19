@@ -37,6 +37,7 @@ public class ViewTodoListController {
     public Label lblDate;
     public AnchorPane root;
     public JFXButton btnToDayList;
+    public JFXButton btnAll;
 
     public void initialize(){
         loadToDoList();
@@ -122,6 +123,23 @@ public class ViewTodoListController {
 
     }
 
-    public void btnToDayListOnAction(ActionEvent actionEvent) {
+
+    public void btnToDayListOnAction(ActionEvent actionEvent) throws SQLException {
+        ObservableList<String> toDo = txtToDoList.getItems();
+        ResultSet resultSet = DBConnection.getInstance().getConnection().createStatement().executeQuery("SELECT title FROM todolist WHERE dueDate = '" + LocalDate.now() + "' ");
+        toDo.clear();
+        while (resultSet.next()){
+            toDo.add(resultSet.getString(1));
+        }
+
+    }
+
+    public void btnAll_OnAction(ActionEvent actionEvent) throws SQLException {
+        ObservableList<String> toDo = txtToDoList.getItems();
+        ResultSet resultSet = DBConnection.getInstance().getConnection().createStatement().executeQuery("SELECT title FROM todolist");
+        toDo.clear();
+        while (resultSet.next()){
+            toDo.add(resultSet.getString(1));
+        }
     }
 }

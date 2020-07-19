@@ -35,5 +35,6 @@
       </JFXButton>
       <Label layoutX="478.0" layoutY="39.0" text="Due Date :" />
       <Label fx:id="lblDate" layoutX="551.0" layoutY="39.0" prefHeight="16.0" prefWidth="120.0" />
+      <JFXButton fx:id="btnAll" layoutX="230.0" layoutY="14.0" onAction="#btnAll_OnAction" prefHeight="38.0" prefWidth="62.0" style="-fx-background-color: #009933;" text="All" textFill="WHITE" />
    </children>
 </AnchorPane>
