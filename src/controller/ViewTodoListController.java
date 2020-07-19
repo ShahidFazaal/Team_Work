@@ -9,6 +9,9 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
@@ -18,9 +21,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.Optional;
 
 public class ViewTodoListController {
     public JFXButton btnNewToDO;
@@ -39,6 +46,9 @@ public class ViewTodoListController {
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 Connection connection = DBConnection.getInstance().getConnection();
                 String value = txtToDoList.getSelectionModel().getSelectedItem();
+                if (newValue==null) {
+                    return;
+                }
                 try {
                     Statement statement = connection.createStatement();
                     ResultSet resultSet = statement.executeQuery("select description,dueDate from todolist where title = '"+value+"'");
@@ -85,6 +95,31 @@ public class ViewTodoListController {
     }
 
     public void btnDeleteOnAction(ActionEvent actionEvent) {
+        String selectedTitle = txtToDoList.getSelectionModel().getSelectedItem();
+        Alert alert = new Alert(AlertType.WARNING, "Do you want to delete the selected one?", ButtonType.YES,
+            ButtonType.NO);
+        alert.showAndWait();
+        if (alert.getResult() == ButtonType.YES) {
+            try {
+                    PreparedStatement preparedStatement = DBConnection.getInstance().getConnection()
+                .prepareStatement("DELETE FROM todolist WHERE title=?");
+                    preparedStatement.setObject(1,selectedTitle);
+                    int affectedRows = preparedStatement.executeUpdate();
+                    if (affectedRows>0) {
+                new Alert(AlertType.CONFIRMATION,"Deleted Successfully",ButtonType.OK).showAndWait();
+                txtDescription.clear();
+                lblDate.setText("");
+            }
+
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
+        }
+        txtToDoList.getSelectionModel().clearSelection();
+        txtToDoList.getItems().clear();
+        loadToDoList();
+
+
     }
 
     public void btnToDayListOnAction(ActionEvent actionEvent) {
